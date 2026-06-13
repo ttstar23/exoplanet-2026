@@ -1,3 +1,17 @@
+# ==========================================
+# 🚨 [초긴급] _loss 에러 원천 차단 우회막 (가장 먼저 실행되어야 함)
+# ==========================================
+import sys
+import types
+
+if 'sklearn.ensemble._loss' not in sys.modules:
+    dummy_loss_module = types.ModuleType('sklearn.ensemble._loss')
+    class DummyLoss:
+        pass
+    dummy_loss_module.LossFunction = DummyLoss
+    sys.modules['sklearn.ensemble._loss'] = dummy_loss_module
+# ==========================================
+
 import streamlit as st
 import pandas as pd
 import joblib
@@ -58,12 +72,12 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 모델 로드
+# 🤖 모델 로드
 @st.cache_resource
 def load_model():
     return joblib.load("exoplanet_model.pkl")
 
-# 로딩 화면용 랜덤 우주 이미지 리스트 (접속할 때마다 바뀜)
+# 로딩 화면용 랜덤 우주 이미지 리스트
 OPENING_IMAGES = [
     "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     "https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
@@ -82,7 +96,7 @@ try:
         st.session_state.bg_img = random.choice(OPENING_IMAGES)
 
     # ==========================================
-    # 🌌 PHASE 1: 오프닝 화면 (타이틀 변경 완료)
+    # 🌌 PHASE 1: 오프닝 대문 화면
     # ==========================================
     if not st.session_state.entered:
         st.write("\n" * 2)
@@ -112,7 +126,7 @@ try:
                 st.rerun()
 
     # ==========================================
-    # 🛰️ PHASE 2: 메인 시뮬레이터 (타이틀 변경 완료)
+    # 🛰️ PHASE 2: 메인 시뮬레이터 조종석
     # ==========================================
     else:
         with st.sidebar:
@@ -123,6 +137,7 @@ try:
             * **행성 크기/무게**: 1.0 근처<br>
             * **햇빛 세기**: 1.0 근처<br>
             * **측정 온도**: 15°C 근처<br>
+            이렇게 맞추면 대박 터집니다!
             """, unsafe_allow_html=True)
             st.write("\n" * 4)
             if st.button("⬅️ 시스템 종료"):
@@ -179,7 +194,6 @@ try:
                 </div>
             """, unsafe_allow_html=True)
 
-            # 95% 이상 대박 이펙트
             if esi >= 95.0:
                 st.balloons()
                 st.snow()
